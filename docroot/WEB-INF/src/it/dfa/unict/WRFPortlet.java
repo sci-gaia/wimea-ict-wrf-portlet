@@ -1,12 +1,18 @@
 package it.dfa.unict;
 
+import it.dfa.unict.pojo.AppInput;
+import it.dfa.unict.pojo.InputFile;
+import it.dfa.unict.pojo.Link;
+import it.dfa.unict.pojo.Task;
 import it.dfa.unict.util.Constants;
 import it.dfa.unict.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -31,6 +37,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
+import com.sun.jersey.api.client.UniformInterfaceException;
 
 public class WRFPortlet extends MVCPortlet {
 
@@ -64,79 +71,121 @@ public class WRFPortlet extends MVCPortlet {
 	public void submit(ActionRequest actionRequest,
 			ActionResponse actionResponse) throws IOException, PortletException {
 
-		AppInput appInput = new AppInput();
 		PortletPreferences preferences = actionRequest.getPreferences();
-
 		String JSONAppPrefs = GetterUtil.getString(preferences.getValue(
 				Constants.APP_PREFERENCES, null));
+		_log.debug(JSONAppPrefs);
 		AppPreferences appPrefs = Utils.getAppPreferences(JSONAppPrefs);
+		_log.debug(appPrefs);
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.TS_FORMAT);
-		String timestamp = dateFormat.format(Calendar.getInstance().getTime());
-		appInput.setTimestamp(timestamp);
+		if (appPrefs.getApplicationId() <= 0) {
+			SessionErrors.add(actionRequest, "wrong-app-id");
+		} else if (Validator.isIPAddress(appPrefs.getFgHost())
+				|| Validator.isHostName(appPrefs.getFgHost())) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
-				.getAttribute(WebKeys.THEME_DISPLAY);
-		User user = themeDisplay.getUser();
-		String username = user.getScreenName();
-		appInput.setUsername(username);
-		UploadPortletRequest uploadRequest = PortalUtil
-				.getUploadPortletRequest(actionRequest);
+			AppInput appInput = new AppInput();
+			appInput.setApplication(appPrefs.getApplicationId());
+			// Just a description of the job, could passed from the JSP maybe.
+			appInput.setDescription("WRF Application");
 
-		File uploadedFile = processInputFile(uploadRequest, username,
-				timestamp, appInput);
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					Constants.TS_FORMAT);
+			String timestamp = dateFormat.format(Calendar.getInstance()
+					.getTime());
 
-		if (uploadedFile != null && uploadedFile.length() == 0) {
-			SessionErrors.add(actionRequest, "empty-file");
+			ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
+					.getAttribute(WebKeys.THEME_DISPLAY);
+			User user = themeDisplay.getUser();
+			String username = user.getScreenName();
+			UploadPortletRequest uploadRequest = PortalUtil
+					.getUploadPortletRequest(actionRequest);
+
+			List<InputFile> inputFiles = new ArrayList<InputFile>();
+			String[] inputSandbox = { null, null, null, null };
+			for (int i = 0; i < 2; i++) {
+				File uploadedFile = processInputFile(uploadRequest, i,
+						username, timestamp, appInput);
+				if (uploadedFile != null && uploadedFile.length() == 0) {
+					SessionErrors.add(actionRequest, "empty-file" + i);
+					break;
+				} else {
+					inputSandbox[i] = uploadedFile.getAbsolutePath();
+					InputFile inputFile = new InputFile();
+					inputFile.setName(uploadedFile.getName());
+					inputFiles.add(inputFile);
+					appInput.getArguments().add(inputFile.getName() + " ");
+				}
+			}
+
+			if (inputFiles.size() > 1) {
+				appInput.setInputFiles(inputFiles);
+
+				String lbcScriptStr = ParamUtil.getString(uploadRequest,
+						"lbc-script", null);
+				File lbcScript = FileUtil.createTempFile("sh");
+				FileUtil.write(lbcScript, lbcScriptStr);
+				InputFile inputFile = new InputFile();
+				inputFile.setName(lbcScript.getName());
+				appInput.getInputFiles().add(inputFile);
+				appInput.getArguments().add(lbcScript.getName() + " ");
+				inputSandbox[2] = lbcScript.getAbsolutePath();
+				
+				String pwdStr = ParamUtil.getString(uploadRequest,
+						"password1", null);
+				File pwdFile = FileUtil.createTempFile();
+				FileUtil.write(pwdFile, pwdStr);
+				inputFile = new InputFile();
+				inputFile.setName(pwdFile.getName());
+				appInput.getInputFiles().add(inputFile);
+				appInput.getArguments().add(pwdFile.getName() + " ");
+				inputSandbox[3] = pwdFile.getAbsolutePath();
+				_log.info(appInput);
+				
+				FutureGatewayClient client = new FutureGatewayClient(
+						appPrefs.getFgHost(), appPrefs.getFgPort(),
+						appPrefs.getFgAPIVersion());
+
+				// 1. Create FG task
+				try {
+					Task t = client.createTask(appInput, username);
+					_log.info(t);
+					
+					if (t.getStatus().equals("WAITING") && inputSandbox != null) {
+						// 2. upload input file
+						String uploadPath = "";
+						List<Link> links = t.getLinks();
+						for (Link link : links) {
+							if (link.getRel().equals("input")) {
+								uploadPath = link.getHref();
+								break;
+							}
+						}
+						String t2 = client.uploadFile(uploadPath, inputSandbox);
+						_log.info(t2);
+						// TODO Check the FG response to see if the file was
+						// correctly uploaded --> "gestatus": "triggered" in the
+						// respose notify user that task was correctly submitted and
+						// he can check status on my-jobs page
+					} else {
+						// TODO Manage this condition
+					}
+					
+				} catch (UniformInterfaceException | IOException e) {
+					_log.error(e.getMessage());
+					SessionErrors.add(actionRequest, "error");
+					actionResponse.setRenderParameter("jspPage", "/jsps/view.jsp");
+				} 
+			}
+
 		} else {
-
-			if (uploadedFile != null)
-				appInput.setInputSandbox(uploadedFile.getAbsolutePath());
-
-			String joblabel = ParamUtil.getString(uploadRequest, "jobLabel");
-
-			appInput.setJobLabel(joblabel);
-
-			_log.info(appInput);
-
-			// List<AppInfrastructureInfo> enabledInfras = Utils
-			// .getEnabledInfrastructureInfo(JSONAppInfras);
-			//
-			// if (enabledInfras.size() > 0) {
-			// InfrastructureInfo infrastructureInfo[] = Utils
-			// .convertAppInfrastructureInfo(enabledInfras);
-			//
-			// submitJob(appPrefs, appInput, infrastructureInfo);
-			//
-			// PortalUtil.copyRequestParameters(actionRequest, actionResponse);
-			// actionResponse.setRenderParameter("jobLabel", joblabel);
-			// actionResponse
-			// .setRenderParameter("jspPage", "/jsps/submit.jsp");
-			// }
+			SessionErrors.add(actionRequest, "wrong-fg-host");
 		}
-
 		// Hide default Liferay success/error messages
 		PortletConfig portletConfig = (PortletConfig) actionRequest
 				.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
 		LiferayPortletConfig liferayPortletConfig = (LiferayPortletConfig) portletConfig;
 		SessionMessages.add(actionRequest, liferayPortletConfig.getPortletId()
 				+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
-	}
-
-	/**
-	 * Method responsible of job submission.
-	 * 
-	 * @param preferences
-	 *            Application preferences object.
-	 * @param appInput
-	 *            An object consists of view input fields values and other job
-	 *            input parameters.
-	 * @param enabledInfrastructures
-	 *            List of enabled infrastructures.
-	 */
-	private void submitJob(AppPreferences preferences, AppInput appInput) {
-
-		_log.info("Submit not implemented yet!!!");
 
 	}
 
@@ -148,12 +197,12 @@ public class WRFPortlet extends MVCPortlet {
 	 * @return
 	 * @throws IOException
 	 */
-	private File processInputFile(UploadPortletRequest uploadRequest,
+	private File processInputFile(UploadPortletRequest uploadRequest, int i,
 			String username, String timestamp, AppInput appInput)
 			throws IOException {
 
 		File file = null;
-		String fileInputName = "fileupload";
+		String fileInputName = "fileupload" + i;
 
 		String sourceFileName = uploadRequest.getFileName(fileInputName);
 
@@ -162,8 +211,6 @@ public class WRFPortlet extends MVCPortlet {
 
 			String fileName = FileUtil.stripExtension(sourceFileName);
 			_log.debug(fileName);
-
-			appInput.setInputFileName(fileName);
 
 			String extension = FileUtil.getExtension(sourceFileName);
 			_log.debug(extension);
