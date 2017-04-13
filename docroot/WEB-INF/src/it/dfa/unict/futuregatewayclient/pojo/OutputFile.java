@@ -1,4 +1,4 @@
-package it.dfa.unict.pojo;
+package it.dfa.unict.futuregatewayclient.pojo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,52 +12,52 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @Generated("org.jsonschema2pojo")
-@JsonPropertyOrder({ "href", "rel" })
-public class Link {
+@JsonPropertyOrder({ "url", "name" })
+public class OutputFile {
 
-	@JsonProperty("href")
-	private String href;
-	@JsonProperty("rel")
-	private String rel;
+	@JsonProperty("url")
+	private String url;
+	@JsonProperty("name")
+	private String name;
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
 	/**
 	 * 
-	 * @return The href
+	 * @return The url
 	 */
-	@JsonProperty("href")
-	public String getHref() {
-		return href;
+	@JsonProperty("url")
+	public String getUrl() {
+		return url;
 	}
 
 	/**
 	 * 
-	 * @param href
-	 *            The href
+	 * @param url
+	 *            The url
 	 */
-	@JsonProperty("href")
-	public void setHref(String href) {
-		this.href = href;
+	@JsonProperty("url")
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	/**
 	 * 
-	 * @return The rel
+	 * @return The name
 	 */
-	@JsonProperty("rel")
-	public String getRel() {
-		return rel;
+	@JsonProperty("name")
+	public String getName() {
+		return name;
 	}
 
 	/**
 	 * 
-	 * @param rel
-	 *            The rel
+	 * @param name
+	 *            The name
 	 */
-	@JsonProperty("rel")
-	public void setRel(String rel) {
-		this.rel = rel;
+	@JsonProperty("name")
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@JsonAnyGetter
@@ -72,7 +72,7 @@ public class Link {
 
 	@Override
 	public String toString() {
-		return "Link [href=" + href + ", rel=" + rel
+		return "OutputFile [url=" + url + ", name=" + name
 				+ ", additionalProperties=" + additionalProperties + "]";
 	}
 

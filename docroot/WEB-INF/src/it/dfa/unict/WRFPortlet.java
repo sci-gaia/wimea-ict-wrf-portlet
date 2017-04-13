@@ -1,9 +1,11 @@
 package it.dfa.unict;
 
-import it.dfa.unict.pojo.AppInput;
-import it.dfa.unict.pojo.InputFile;
-import it.dfa.unict.pojo.Link;
-import it.dfa.unict.pojo.Task;
+import it.dfa.unict.futuregatewayclient.FutureGatewayClient;
+import it.dfa.unict.futuregatewayclient.FutureGatewayClientException;
+import it.dfa.unict.futuregatewayclient.pojo.AppInput;
+import it.dfa.unict.futuregatewayclient.pojo.InputFile;
+import it.dfa.unict.futuregatewayclient.pojo.Link;
+import it.dfa.unict.futuregatewayclient.pojo.Task;
 import it.dfa.unict.util.Constants;
 import it.dfa.unict.util.Utils;
 
@@ -104,7 +106,7 @@ public class WRFPortlet extends MVCPortlet {
 			String[] inputSandbox = { null, null, null, null };
 			for (int i = 0; i < 2; i++) {
 				File uploadedFile = processInputFile(uploadRequest, i,
-						username, timestamp, appInput);
+						username, timestamp);
 				if (uploadedFile != null && uploadedFile.length() == 0) {
 					SessionErrors.add(actionRequest, "empty-file" + i);
 					break;
@@ -129,9 +131,9 @@ public class WRFPortlet extends MVCPortlet {
 				appInput.getInputFiles().add(inputFile);
 				appInput.getArguments().add(lbcScript.getName() + " ");
 				inputSandbox[2] = lbcScript.getAbsolutePath();
-				
-				String pwdStr = ParamUtil.getString(uploadRequest,
-						"password1", null);
+
+				String pwdStr = ParamUtil.getString(uploadRequest, "password1",
+						null);
 				File pwdFile = FileUtil.createTempFile();
 				FileUtil.write(pwdFile, pwdStr);
 				inputFile = new InputFile();
@@ -140,7 +142,7 @@ public class WRFPortlet extends MVCPortlet {
 				appInput.getArguments().add(pwdFile.getName() + " ");
 				inputSandbox[3] = pwdFile.getAbsolutePath();
 				_log.info(appInput);
-				
+
 				FutureGatewayClient client = new FutureGatewayClient(
 						appPrefs.getFgHost(), appPrefs.getFgPort(),
 						appPrefs.getFgAPIVersion());
@@ -149,7 +151,7 @@ public class WRFPortlet extends MVCPortlet {
 				try {
 					Task t = client.createTask(appInput, username);
 					_log.info(t);
-					
+
 					if (t.getStatus().equals("WAITING") && inputSandbox != null) {
 						// 2. upload input file
 						String uploadPath = "";
@@ -164,17 +166,18 @@ public class WRFPortlet extends MVCPortlet {
 						_log.info(t2);
 						// TODO Check the FG response to see if the file was
 						// correctly uploaded --> "gestatus": "triggered" in the
-						// respose notify user that task was correctly submitted and
+						// respose notify user that task was correctly submitted
+						// and
 						// he can check status on my-jobs page
-					} else {
-						// TODO Manage this condition
 					}
-					
-				} catch (UniformInterfaceException | IOException e) {
+
+				} catch (UniformInterfaceException | IOException
+						| FutureGatewayClientException e) {
 					_log.error(e.getMessage());
 					SessionErrors.add(actionRequest, "error");
-					actionResponse.setRenderParameter("jspPage", "/jsps/view.jsp");
-				} 
+					actionResponse.setRenderParameter("jspPage",
+							"/jsps/view.jsp");
+				}
 			}
 
 		} else {
@@ -198,8 +201,7 @@ public class WRFPortlet extends MVCPortlet {
 	 * @throws IOException
 	 */
 	private File processInputFile(UploadPortletRequest uploadRequest, int i,
-			String username, String timestamp, AppInput appInput)
-			throws IOException {
+			String username, String timestamp) throws IOException {
 
 		File file = null;
 		String fileInputName = "fileupload" + i;

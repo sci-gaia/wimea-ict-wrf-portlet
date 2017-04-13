@@ -1,4 +1,4 @@
-package it.dfa.unict.pojo;
+package it.dfa.unict.futuregatewayclient.pojo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

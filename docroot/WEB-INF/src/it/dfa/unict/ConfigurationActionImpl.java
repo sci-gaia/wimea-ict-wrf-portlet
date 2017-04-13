@@ -47,11 +47,12 @@ public class ConfigurationActionImpl implements ConfigurationAction {
 			savePrefereces(actionRequest, portletResource);
 			break;
 		case Constants.SAVE_PILOT:
-			savePilot(actionRequest, portletResource);
+			savePilot(actionRequest);
 			break;
 		default:
 			_log.warn("Unsupported command.");
 			SessionErrors.add(actionRequest, "usupported-action");
+			break;
 		}
 
 	}
@@ -120,7 +121,7 @@ public class ConfigurationActionImpl implements ConfigurationAction {
 
 	}
 
-	private void savePilot(ActionRequest actionRequest, String portletResource)
+	private void savePilot(ActionRequest actionRequest)
 			throws IOException {
 		String pilotScript = ParamUtil.getString(actionRequest, "pilotScript");
 		pilotScript.replaceAll("\r", "");
