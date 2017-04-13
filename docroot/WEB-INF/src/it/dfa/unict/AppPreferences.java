@@ -1,7 +1,5 @@
 package it.dfa.unict;
 
-import it.dfa.unict.util.Constants;
-
 public class AppPreferences {
 	private String fgHost = "";
 	private int fgPort;
@@ -49,21 +47,11 @@ public class AppPreferences {
 		this.pilotScript = pilotScript;
 	}
 
-	/**
-	 * Returns a text string containing the AppPreferences values dump
-	 * 
-	 * @return String with HTML statements inside a 'table' block
-	 * 
-	 * @see AppPreferences
-	 */
-	public String dump() {
-		String dump = Constants.NEW_LINE + "Preference values:"
-				+ Constants.NEW_LINE + "-----------------" + Constants.NEW_LINE
-				+ "gridOperationId              : '" + applicationId + "'"
-				+ Constants.NEW_LINE + "FgHost            : '"
-				+ fgHost + "'" + Constants.NEW_LINE
-				+ "pilotScript                  : '" + pilotScript + "'";
-		return dump;
-	} // dumpPreferences
+	@Override
+	public String toString() {
+		return "AppPreferences [fgHost=" + fgHost + ", fgPort=" + fgPort
+				+ ", fgAPIVersion=" + fgAPIVersion + ", applicationId="
+				+ applicationId + ", pilotScript=" + pilotScript + "]";
+	}
 
 }

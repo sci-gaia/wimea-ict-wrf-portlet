@@ -4,11 +4,13 @@
     Author     : mario
 --%>
 
+<%@page import="com.liferay.portal.kernel.util.FileUtil"%>
 <%@page import="com.liferay.portal.kernel.util.ListUtil"%>
 <%@page import="com.liferay.portal.kernel.util.ParamUtil"%>
 <%@page import="it.dfa.unict.AppPreferences"%>
 <%@page import="it.dfa.unict.util.Constants"%>
 <%@page import="it.dfa.unict.util.Utils"%>
+<%@page import="it.dfa.unict.WRFPortlet"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.HashMap"%>
@@ -17,16 +19,21 @@
 
 <%
 	PortletPreferences preferences = null;
-	
-	String portletResource = ParamUtil.getString(request, "portletResource");
-		
+
+	String portletResource = ParamUtil.getString(request,
+			"portletResource");
+
 	if (Validator.isNotNull(portletResource)) {
-    	preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletResource);
+		preferences = PortletPreferencesFactoryUtil.getPortletSetup(
+				request, portletResource);
 	}
 
-	String JSONAppPrefs = GetterUtil.getString(preferences
-		.getValue(Constants.APP_PREFERENCES, null));
-	AppPreferences appPreferences = Utils.getAppPreferences(JSONAppPrefs);
+	String JSONAppPrefs = GetterUtil.getString(preferences.getValue(
+			Constants.APP_PREFERENCES, null));
+	AppPreferences appPreferences = Utils
+			.getAppPreferences(JSONAppPrefs);
+
+	String pilotScript = FileUtil.read(WRFPortlet.pilotScript);
 %>
 
 <liferay-portlet:actionURL portletConfiguration="true"
@@ -36,24 +43,23 @@
 </liferay-portlet:actionURL>
 
 
-<liferay-portlet:renderURL portletConfiguration="true"
-	var="pilotScriptUrl">
-	<liferay-portlet:param name="render-page"
-		value="<%=Constants.VIEW_PILOT_PAGE%>" />
-	<liferay-portlet:param name="pilotScript"
-		value="<%=appPreferences.getPilotScript()%>" />
-</liferay-portlet:renderURL>
+<liferay-portlet:actionURL portletConfiguration="true"
+	var="savePilotUrl">
+	<portlet:param name="<%=Constants.CMD%>"
+		value="<%=Constants.SAVE_PILOT%>" />
+</liferay-portlet:actionURL>
 
-<liferay-ui:success key="<%=Constants.CONFIG_SAVED_SUCCESS%>"
-	message="<%=Constants.CONFIG_SAVED_SUCCESS%>" />
+<aui:fieldset label="generic-pref-lbl">
+	<aui:layout>
 
-<aui:form action="${savePreferencesUrl}" name="aForm" method="post">
-	<aui:fieldset label="generic-pref-lbl">
-		<aui:field-wrapper>
-			<aui:button name="save" value="save" type="submit" />
-		</aui:field-wrapper>
-		<aui:layout>
-			<aui:column columnWidth="50" first="true">
+		<aui:column columnWidth="50" first="true">
+			<aui:form action="${savePreferencesUrl}" name="aForm" method="post">
+				<aui:field-wrapper>
+					<aui:button name="save" value="save-configuration" type="submit" />
+				</aui:field-wrapper>
+
+				<liferay-ui:success key="<%=Constants.CONFIG_SAVED_SUCCESS%>"
+					message="<%=Constants.CONFIG_SAVED_SUCCESS%>" />
 				<aui:input type="text" name="fgHost" id="fgHostId"
 					label="Futuregateway host:" size="60"
 					value="<%=appPreferences.getFgHost()%>">
@@ -79,13 +85,19 @@
 					<aui:validator name="required" />
 					<aui:validator name="digits" errorMessage="app-id" />
 				</aui:input>
-
+			</aui:form>
+		</aui:column>
+		<aui:column columnWidth="50" last="true">
+			<aui:form action="<%=savePilotUrl%>" method="post">
+				<aui:field-wrapper>
+					<aui:button name="save" value="save-pilot" type="submit" />
+				</aui:field-wrapper>
 				<liferay-ui:success key="pilot-update-success"
 					message="pilot-update-success" />
-<%-- 				<aui:button id="pilot" name="piltot_btn" value="Edit pilot script" --%>
-<%-- 					onClick="<%= pilotScriptUrl %>" /> --%>
-			</aui:column>
+				<aui:input type="textarea" name="pilotScript" id="pilotScript"
+					label="pilot-script" rows="20" cols="100" value="<%=pilotScript%>" />
+			</aui:form>
+		</aui:column>
+	</aui:layout>
+</aui:fieldset>
 
-		</aui:layout>
-	</aui:fieldset>
-</aui:form>

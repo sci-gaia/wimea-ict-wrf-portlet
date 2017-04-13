@@ -1,7 +1,6 @@
 package it.dfa.unict;
 
 import it.dfa.unict.util.Constants;
-import it.dfa.unict.util.Utils;
 
 import java.io.IOException;
 
@@ -22,6 +21,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.ConfigurationAction;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
@@ -121,11 +121,11 @@ public class ConfigurationActionImpl implements ConfigurationAction {
 
 	}
 
-	private void savePilot(ActionRequest actionRequest)
-			throws IOException {
+	private void savePilot(ActionRequest actionRequest) throws IOException {
 		String pilotScript = ParamUtil.getString(actionRequest, "pilotScript");
+		_log.debug(pilotScript);
 		pilotScript.replaceAll("\r", "");
-		Utils.string2File(WRFPortlet.pilotScript, pilotScript);
+		FileUtil.write(WRFPortlet.pilotScript, pilotScript);
 
 		SessionMessages.add(actionRequest, "pilot-update-success");
 	}

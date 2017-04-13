@@ -121,12 +121,13 @@ public class WRFPortlet extends MVCPortlet {
 
 			if (inputFiles.size() > 1) {
 				appInput.setInputFiles(inputFiles);
-
+				InputFile inputFile = new InputFile();
+				
 				String lbcScriptStr = ParamUtil.getString(uploadRequest,
 						"lbc-script", null);
 				File lbcScript = FileUtil.createTempFile("sh");
 				FileUtil.write(lbcScript, lbcScriptStr);
-				InputFile inputFile = new InputFile();
+				
 				inputFile.setName(lbcScript.getName());
 				appInput.getInputFiles().add(inputFile);
 				appInput.getArguments().add(lbcScript.getName() + " ");
@@ -164,11 +165,6 @@ public class WRFPortlet extends MVCPortlet {
 						}
 						String t2 = client.uploadFile(uploadPath, inputSandbox);
 						_log.info(t2);
-						// TODO Check the FG response to see if the file was
-						// correctly uploaded --> "gestatus": "triggered" in the
-						// respose notify user that task was correctly submitted
-						// and
-						// he can check status on my-jobs page
 					}
 
 				} catch (UniformInterfaceException | IOException
@@ -219,11 +215,7 @@ public class WRFPortlet extends MVCPortlet {
 
 			// Get the uploaded file as a file.
 			File uploadedFile = uploadRequest.getFile(fileInputName, true);
-			File folder = new File(Constants.ROOT_FOLDER_NAME);
-			// This is our final file path.
-			file = new File(folder.getAbsolutePath() + Constants.FILE_SEPARATOR
-					+ username + "_" + timestamp + "_" + fileName
-					+ ((!extension.isEmpty()) ? "." + extension : ""));
+			file = FileUtil.createTempFile(extension);
 			FileUtil.move(uploadedFile, file);
 
 		}
