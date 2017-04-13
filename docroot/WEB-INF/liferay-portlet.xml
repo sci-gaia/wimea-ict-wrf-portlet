@@ -3,14 +3,14 @@
 
 <liferay-portlet-app>
 	<portlet>
-		<portlet-name>WRFPortlet</portlet-name>
+		<portlet-name>NewWRFPortlet</portlet-name>
 
 		<icon>/icon.png</icon>
 		<configuration-action-class>it.dfa.unict.ConfigurationActionImpl</configuration-action-class>
 		<instanceable>false</instanceable>
 		<header-portlet-css>/css/main.css</header-portlet-css>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
-		<css-class-wrapper>WRF-portlet</css-class-wrapper>
+		<css-class-wrapper>new-WRF-portlet</css-class-wrapper>
 
 	</portlet>
 	<role-mapper>

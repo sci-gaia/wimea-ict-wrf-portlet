@@ -3,8 +3,6 @@
 
 <display>
 	<category name="Sci-GaIA">
-
-		<portlet id="WRFPortlet" />
-
+		<portlet id="NewWRFPortlet" />
 	</category>
 </display>
