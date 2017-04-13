@@ -52,9 +52,9 @@ before_install:
  - cp ${INSTALL_ROOT}/glassfish-3.1.2/modules/jersey-json.jar ${INSTALL_ROOT}/glassfish-3.1.2/domains/domain1/lib/
  - cp ${INSTALL_ROOT}/glassfish-3.1.2/modules/jersey-multipart.jar ${INSTALL_ROOT}/glassfish-3.1.2/domains/domain1/lib/
 
-# Building the wrf-portlet
+# Building the wimea-ict-wrf-portlet
 install:
- - cd liferay-plugins-sdk-6.1.1/portlets/wrf-portlet
+ - cd liferay-plugins-sdk-6.1.1/portlets/wimea-ict-wrf-portlet
  - sudo ant all
 
 notifications:
