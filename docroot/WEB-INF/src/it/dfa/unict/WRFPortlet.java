@@ -11,9 +11,7 @@ import it.dfa.unict.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.portlet.ActionRequest;
@@ -87,14 +85,7 @@ public class WRFPortlet extends MVCPortlet {
 
 			AppInput appInput = new AppInput();
 			appInput.setApplication(appPrefs.getApplicationId());
-			// Just a description of the job, could passed from the JSP maybe.
-			appInput.setDescription("WRF Application");
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat(
-					Constants.TS_FORMAT);
-			String timestamp = dateFormat.format(Calendar.getInstance()
-					.getTime());
-
+			
 			ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 					.getAttribute(WebKeys.THEME_DISPLAY);
 			User user = themeDisplay.getUser();
@@ -106,7 +97,7 @@ public class WRFPortlet extends MVCPortlet {
 			String[] inputSandbox = { null, null, null, null };
 			for (int i = 0; i < 2; i++) {
 				File uploadedFile = processInputFile(uploadRequest, i,
-						username, timestamp);
+						username);
 				if (uploadedFile != null && uploadedFile.length() == 0) {
 					SessionErrors.add(actionRequest, "empty-file" + i);
 					break;
@@ -118,8 +109,11 @@ public class WRFPortlet extends MVCPortlet {
 					appInput.getArguments().add(inputFile.getName() + " ");
 				}
 			}
-
+			String jobLabel;
 			if (inputFiles.size() > 1) {
+				jobLabel = ParamUtil.get(uploadRequest, "jobLabel",
+						"WRF Application");
+				appInput.setDescription(jobLabel);
 				appInput.setInputFiles(inputFiles);
 				InputFile inputFile = new InputFile();
 				
@@ -166,6 +160,8 @@ public class WRFPortlet extends MVCPortlet {
 						String t2 = client.uploadFile(uploadPath, inputSandbox);
 						_log.info(t2);
 					}
+					actionResponse.setRenderParameter("jobLabel", jobLabel);
+					actionResponse.setRenderParameter("jspPage", "/jsps/submit.jsp");
 
 				} catch (UniformInterfaceException | IOException
 						| FutureGatewayClientException e) {
@@ -182,7 +178,8 @@ public class WRFPortlet extends MVCPortlet {
 		// Hide default Liferay success/error messages
 		PortletConfig portletConfig = (PortletConfig) actionRequest
 				.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
-		LiferayPortletConfig liferayPortletConfig = (LiferayPortletConfig) portletConfig;
+		LiferayPortletConfig liferayPortletConfig =
+				(LiferayPortletConfig) portletConfig;
 		SessionMessages.add(actionRequest, liferayPortletConfig.getPortletId()
 				+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 
@@ -197,7 +194,7 @@ public class WRFPortlet extends MVCPortlet {
 	 * @throws IOException
 	 */
 	private File processInputFile(UploadPortletRequest uploadRequest, int i,
-			String username, String timestamp) throws IOException {
+			String username) throws IOException {
 
 		File file = null;
 		String fileInputName = "fileupload" + i;

@@ -93,7 +93,10 @@
 					</aui:input>
 				</liferay-ui:panel>
 			</liferay-ui:panel-container>
-
+			
+			<aui:input type="text" name="jobLabel" label="job-label" size="60"
+							helpMessage="job-label-help" id="jobLabel" value="<%= jobLabel %>" />
+			
 			<aui:field-wrapper>
 				<aui:button name="submit" value="submit" type="submit" />
 				<aui:button name="reset" value="cancel" type="reset" />

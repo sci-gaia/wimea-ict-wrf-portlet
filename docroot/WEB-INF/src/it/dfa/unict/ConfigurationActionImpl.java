@@ -124,7 +124,7 @@ public class ConfigurationActionImpl implements ConfigurationAction {
 	private void savePilot(ActionRequest actionRequest) throws IOException {
 		String pilotScript = ParamUtil.getString(actionRequest, "pilotScript");
 		_log.debug(pilotScript);
-		pilotScript.replaceAll("\r", "");
+		pilotScript = pilotScript.replaceAll("\r", "");
 		FileUtil.write(WRFPortlet.pilotScript, pilotScript);
 
 		SessionMessages.add(actionRequest, "pilot-update-success");
