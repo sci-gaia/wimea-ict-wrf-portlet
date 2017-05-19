@@ -37,7 +37,6 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
-import com.sun.jersey.api.client.UniformInterfaceException;
 
 public class WRFPortlet extends MVCPortlet {
 
@@ -85,19 +84,15 @@ public class WRFPortlet extends MVCPortlet {
 
 			AppInput appInput = new AppInput();
 			appInput.setApplication(appPrefs.getApplicationId());
-			
-			ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
-					.getAttribute(WebKeys.THEME_DISPLAY);
-			User user = themeDisplay.getUser();
-			String username = user.getScreenName();
+
+			String username = this.GetUserScreenName(actionRequest);
 			UploadPortletRequest uploadRequest = PortalUtil
 					.getUploadPortletRequest(actionRequest);
 
 			List<InputFile> inputFiles = new ArrayList<InputFile>();
 			String[] inputSandbox = { null, null, null, null };
 			for (int i = 0; i < 2; i++) {
-				File uploadedFile = processInputFile(uploadRequest, i,
-						username);
+				File uploadedFile = processInputFile(uploadRequest, i);
 				if (uploadedFile != null && uploadedFile.length() == 0) {
 					SessionErrors.add(actionRequest, "empty-file" + i);
 					break;
@@ -116,12 +111,12 @@ public class WRFPortlet extends MVCPortlet {
 				appInput.setDescription(jobLabel);
 				appInput.setInputFiles(inputFiles);
 				InputFile inputFile = new InputFile();
-				
+
 				String lbcScriptStr = ParamUtil.getString(uploadRequest,
 						"lbc-script", null);
 				File lbcScript = FileUtil.createTempFile("sh");
 				FileUtil.write(lbcScript, lbcScriptStr);
-				
+
 				inputFile.setName(lbcScript.getName());
 				appInput.getInputFiles().add(inputFile);
 				appInput.getArguments().add(lbcScript.getName() + " ");
@@ -142,29 +137,13 @@ public class WRFPortlet extends MVCPortlet {
 						appPrefs.getFgHost(), appPrefs.getFgPort(),
 						appPrefs.getFgAPIVersion());
 
-				// 1. Create FG task
 				try {
-					Task t = client.createTask(appInput, username);
-					_log.info(t);
-
-					if (t.getStatus().equals("WAITING") && inputSandbox != null) {
-						// 2. upload input file
-						String uploadPath = "";
-						List<Link> links = t.getLinks();
-						for (Link link : links) {
-							if (link.getRel().equals("input")) {
-								uploadPath = link.getHref();
-								break;
-							}
-						}
-						String t2 = client.uploadFile(uploadPath, inputSandbox);
-						_log.info(t2);
-					}
+					this.submitTask(appInput, username, inputSandbox, client);
 					actionResponse.setRenderParameter("jobLabel", jobLabel);
-					actionResponse.setRenderParameter("jspPage", "/jsps/submit.jsp");
+					actionResponse.setRenderParameter("jspPage",
+							"/jsps/submit.jsp");
 
-				} catch (UniformInterfaceException | IOException
-						| FutureGatewayClientException e) {
+				} catch (IOException | FutureGatewayClientException e) {
 					_log.error(e.getMessage());
 					SessionErrors.add(actionRequest, "error");
 					actionResponse.setRenderParameter("jspPage",
@@ -178,11 +157,40 @@ public class WRFPortlet extends MVCPortlet {
 		// Hide default Liferay success/error messages
 		PortletConfig portletConfig = (PortletConfig) actionRequest
 				.getAttribute(JavaConstants.JAVAX_PORTLET_CONFIG);
-		LiferayPortletConfig liferayPortletConfig =
-				(LiferayPortletConfig) portletConfig;
+		LiferayPortletConfig liferayPortletConfig = (LiferayPortletConfig) portletConfig;
 		SessionMessages.add(actionRequest, liferayPortletConfig.getPortletId()
 				+ SessionMessages.KEY_SUFFIX_HIDE_DEFAULT_ERROR_MESSAGE);
 
+	}
+
+	/**
+	 * 
+	 * @param appInput
+	 * @param username
+	 * @param inputSandbox
+	 * @param client
+	 * @throws IOException
+	 * @throws FutureGatewayClientException
+	 */
+	private void submitTask(AppInput appInput, String username,
+			String[] inputSandbox, FutureGatewayClient client)
+			throws IOException, FutureGatewayClientException {
+		Task t = client.createTask(appInput, username);
+		_log.info(t);
+
+		if (t.getStatus().equals("WAITING") && inputSandbox != null) {
+			// 2. upload input file
+			String uploadPath = "";
+			List<Link> links = t.getLinks();
+			for (Link link : links) {
+				if (link.getRel().equals("input")) {
+					uploadPath = link.getHref();
+					break;
+				}
+			}
+			String t2 = client.uploadFile(uploadPath, inputSandbox);
+			_log.info(t2);
+		}
 	}
 
 	/**
@@ -193,8 +201,8 @@ public class WRFPortlet extends MVCPortlet {
 	 * @return
 	 * @throws IOException
 	 */
-	private File processInputFile(UploadPortletRequest uploadRequest, int i,
-			String username) throws IOException {
+	private File processInputFile(UploadPortletRequest uploadRequest, int i)
+			throws IOException {
 
 		File file = null;
 		String fileInputName = "fileupload" + i;
@@ -217,5 +225,19 @@ public class WRFPortlet extends MVCPortlet {
 
 		}
 		return file;
+	}
+
+	/**
+	 * Returns the logged in user's username.
+	 * 
+	 * @param actionRequest
+	 *            {@link ActionRequest} from which get the information.
+	 * @return logged in user's username
+	 */
+	private String GetUserScreenName(ActionRequest actionRequest) {
+		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
+				.getAttribute(WebKeys.THEME_DISPLAY);
+		User user = themeDisplay.getUser();
+		return user.getScreenName();
 	}
 }
