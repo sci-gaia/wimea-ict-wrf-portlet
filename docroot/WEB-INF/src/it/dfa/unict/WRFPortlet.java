@@ -85,7 +85,7 @@ public class WRFPortlet extends MVCPortlet {
 			AppInput appInput = new AppInput();
 			appInput.setApplication(appPrefs.getApplicationId());
 
-			String username = this.GetUserScreenName(actionRequest);
+			String username = this.getUserScreenName(actionRequest);
 			UploadPortletRequest uploadRequest = PortalUtil
 					.getUploadPortletRequest(actionRequest);
 
@@ -234,7 +234,7 @@ public class WRFPortlet extends MVCPortlet {
 	 *            {@link ActionRequest} from which get the information.
 	 * @return logged in user's username
 	 */
-	private String GetUserScreenName(ActionRequest actionRequest) {
+	private String getUserScreenName(ActionRequest actionRequest) {
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest
 				.getAttribute(WebKeys.THEME_DISPLAY);
 		User user = themeDisplay.getUser();
