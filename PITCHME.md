@@ -21,9 +21,9 @@ WRF for WIMEA-ICT
 1. Select the **namelist.wps** using the '*Choose File*' button. Following an example of *WPS* file of Italy.
 1. Select the **namelist.input** using the '*Choose File*' button. Following an example of *INPUT* file.
 
----?gist=29a1e75e40c7bae7d6114214dfab06b9#file-namelist-wps
+---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
----?gist=29a1e75e40c7bae7d6114214dfab06b9#file-namelist-input
+---
 
 # Demo
 
