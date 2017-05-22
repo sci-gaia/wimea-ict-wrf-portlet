@@ -23,13 +23,9 @@ WRF for WIMEA-ICT
 
 ---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
-# namelist.wps example
-
 An example of *WPS* file of Italy.
 
 ---?gist=a7c11a812b5294e011977cd290818de0
-
-# namelist.input example
 
 An example of *INPUT* file.
 
