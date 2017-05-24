@@ -4,8 +4,8 @@
 }
 
 
-.reveal li {
-  font-size: 0.85em
+.reveal section ol li {
+  font-size: 0.75em
 }
 
 .reveal blockquote {
