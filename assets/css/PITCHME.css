@@ -3,6 +3,9 @@
   box-shadow: none;
 }
 
+.reveal h6 {
+  font-size: 0.8em
+}
 
 .reveal section ol li {
   font-size: 0.75em
