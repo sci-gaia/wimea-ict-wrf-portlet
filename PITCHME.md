@@ -16,7 +16,7 @@ WRF Portlet
 
 ---
 
-# The input files
+# The inputs
 
 1. Select the **namelist.wps** using the '*Choose File*' button.
 1. Select the **namelist.input** using the '*Choose File*' button.
