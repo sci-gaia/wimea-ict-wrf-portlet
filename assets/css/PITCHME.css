@@ -3,6 +3,11 @@
   box-shadow: none;
 }
 
+
+.reveal li {
+  font-size: 0.85em
+}
+
 .reveal blockquote {
   font-size: 0.5em
 }
