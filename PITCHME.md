@@ -22,7 +22,6 @@ WRF Portlet
 1. Select the **namelist.input** using the '*Choose File*' button.
 1. Create the script to download the Lateral Boundary Condition (**LBC**) files for your analysis, from [https://rda.ucar.edu/](https://rda.ucar.edu/) repository
 > N.B. You need a valid account on
-1.
 
 ---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
