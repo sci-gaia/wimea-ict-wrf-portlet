@@ -1,2 +1,4 @@
 theme : beige
 logo : assets/logo.png
+theme-override: assets/css/PITCHME.css
+highlight : mono-blue
