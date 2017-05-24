@@ -23,8 +23,7 @@ WRF Portlet
 1. Create the script to download the Lateral Boundary Condition (**LBC**) files for your analysis, from [https://rda.ucar.edu/](https://rda.ucar.edu/) repository
 > N.B. You need a registered account on [https://rda.ucar.edu/](https://rda.ucar.edu/) to proceed.
 1. Fill the password fields with your [https://rda.ucar.edu/](https://rda.ucar.edu/) password.
-1. Press ![](assets/submit.png)
-1. :tada: Your analysis will perform on a remote site. :tada:
+1. Press ![](assets/submit.png) and ... <span> <img src="https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png" alt="Tada..." width="32" /></span> Your analysis will run on a remote site. <span> <img src="https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png" alt="Tada..." width="32" /></span>
 
 ---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
