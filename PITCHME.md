@@ -22,11 +22,11 @@ The **WRF portlet** provides an easy way to perform WRF model on **D**istributed
 
 ![](assets/screenshot.png)
 
-Visit [sgw.africa-grid.org/wrf](https://sgw.africa-grid.org/wrf) to run WRF from Africa Grid Science Gateway.
-
 ---
 
 ### How to use WRF portlet
+
+Visit [sgw.africa-grid.org/wrf](https://sgw.africa-grid.org/wrf) to run WRF from Africa Grid Science Gateway.
 
 1. Select the **namelist.wps** using the '*Choose File*' button.
 1. Select the **namelist.input** using the '*Choose File*' button.
@@ -37,15 +37,15 @@ Visit [sgw.africa-grid.org/wrf](https://sgw.africa-grid.org/wrf) to run WRF from
 
 ---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
-An example of *WPS* file of Italy.
+An example of *WPS* file of Italy. ([namelist.wps](https://gist.github.com/mtorrisi/29a1e75e40c7bae7d6114214dfab06b9))
 
 ---?gist=a7c11a812b5294e011977cd290818de0
 
-An example of *INPUT* file.
+An example of *INPUT* file. ([namelist.input](https://gist.github.com/mtorrisi/a7c11a812b5294e011977cd290818de0))
 
 ---?gist=380ea4af805494fc85dc668dff46ec12
 
-> NB Please, replace `<your@email.here>` with your own.
+The download script for the previous inputs. ([download-lbc.csh](https://gist.github.com/mtorrisi/380ea4af805494fc85dc668dff46ec12))
 
 ---
 
