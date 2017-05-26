@@ -3,8 +3,6 @@ WRF Portlet
 
 ![](assets/wrf-logo.png)
 
-#### Contributors
-
 ###### **Damas Makweba**, DIT - Dar es Salaam Institute of Technology - ( [@dmakweba](https://github.com/dmakweba) )
 ###### **Triphonia Ngailo**, DIT - Dar es Salaam Institute of Technology
 ###### **Mario Torrisi**, DFA-UNICT - Physics and Astronomy Department, University of Catania - ( [@mtorrisi](https://github.com/mtorrisi) )
@@ -20,7 +18,7 @@ For more information, visit [www.wrf-model.org](http://www.wrf-model.org/index.p
 
 ### WRF user interface
 
-**WRF Portlet** provides an easy way to perform WRF model on Distributed Computing Infrastructure (DCI).
+The **WRF portlet** provides an easy way to perform WRF model on **D**istributed **C**omputing **I**nfrastructure (**DCI**).
 
 ![](assets/screenshot.png)
 
