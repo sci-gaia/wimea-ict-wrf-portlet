@@ -33,7 +33,7 @@ Visit [sgw.africa-grid.org/wrf](https://sgw.africa-grid.org/wrf) to run WRF from
 1. Create the script to download the Lateral Boundary Condition (**LBC**) files for your analysis, from [rda.ucar.edu](https://rda.ucar.edu/) repository
 > NB You need a valid account on [rda.ucar.edu](https://rda.ucar.edu/index.html?hash=data_user&action=register) to proceed.
 1. Fill the password fields with your [rda.ucar.edu](https://rda.ucar.edu/) password.
-1. Click ![](https://github.com/sci-gaia/wimea-ict-wrf-portlet/blob/feature/assets/submit.png?raw=true) and ... ![](https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png) Your analysis will perform on a remote site. ![](https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png)
+1. Click ![](assets/submit.png) and ... ![](https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png) Your analysis will perform on a remote site. ![](https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/tada.png)
 
 ---?gist=29a1e75e40c7bae7d6114214dfab06b9
 
