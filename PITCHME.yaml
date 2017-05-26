@@ -1,3 +1,4 @@
+revealjs: 3.4.1
 theme : beige
 logo : assets/logo.png
 theme-override: assets/css/PITCHME.css
